@@ -2,7 +2,7 @@ const { range } = require("neumeumeu-common/utils");
 const PlayerStatus = require("neumeumeu-common/constants/player-status");
 const ChatConf = require("neumeumeu-common/constants/chat");
 const GameStatus = require("neumeumeu-common/constants/game-status");
-const r = require("../database");
+const { r } = require("../database");
 const { getPlayer } = require("./player");
 const { createMessage } = require("./gameplay");
 

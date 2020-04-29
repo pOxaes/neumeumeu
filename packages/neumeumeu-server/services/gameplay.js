@@ -8,7 +8,7 @@ const GameStatus = require("neumeumeu-common/constants/game-status");
 const PlayerStatus = require("neumeumeu-common/constants/player-status");
 const ChatConf = require("neumeumeu-common/constants/chat");
 const GameplayConstants = require("neumeumeu-common/constants/gameplay");
-const r = require("../database");
+const { r } = require("../database");
 const ai = require("./ai");
 
 // Data

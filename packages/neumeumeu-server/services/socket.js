@@ -1,5 +1,5 @@
 const Server = require("socket.io");
-const r = require("../database");
+const { r } = require("../database");
 const log = require("../log");
 
 let io;

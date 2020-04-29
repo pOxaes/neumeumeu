@@ -1,8 +1,7 @@
 const crypto = require("crypto");
-const google = require("googleapis");
+const { google } = require("googleapis");
 const Errors = require("neumeumeu-common/constants/errors");
-const { promisify } = require("neumeumeu-common/utils");
-const r = require("../database");
+const { r } = require("../database");
 
 function getPlayerFromToken(token) {
   if (!token) {
@@ -36,34 +35,27 @@ async function loginFromGoogle(authorizationCode) {
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URL
   );
-  const plus = google.plus("v1").people;
-  const loadTokens = promisify(oauth2Client.getToken, oauth2Client);
-  const loadUserProfile = promisify(plus.get, plus);
+
+  const { tokens } = await oauth2Client.getToken(authorizationCode);
+  oauth2Client.setCredentials({ access_token: tokens.access_token });
 
   try {
-    const tokens = await loadTokens(authorizationCode);
-    oauth2Client.setCredentials(tokens);
-    const googleProfile = await loadUserProfile({
-      userId: "me",
+    const oauth2 = google.oauth2({
       auth: oauth2Client,
+      version: "v2",
     });
-    return login(simpleProfile(googleProfile));
+    const { data } = await oauth2.userinfo.get();
+    return login(simpleProfile(data));
   } catch (e) {
     return Promise.reject("Error while loading with google");
   }
 }
 
-function simpleProfile(googleProfile) {
-  const email = googleProfile.emails.find(
-    email => email.type === "account"
-  ) || {
-    value: "",
-  };
-
+function simpleProfile(data) {
   return {
-    name: googleProfile.displayName,
-    avatarURL: googleProfile.image ? googleProfile.image.url : "",
-    email: email.value,
+    name: data.given_name,
+    avatarURL: data.picture || "",
+    email: data.email,
   };
 }
 

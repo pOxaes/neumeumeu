@@ -8,6 +8,7 @@ const compression = require("compression");
 const socketService = require("./services/socket");
 const actionHandler = require("./services/actionHandler");
 const realtimeHandler = require("./services/realtimeHandler");
+const { initDB } = require("./database");
 const log = require("./log");
 
 const app = express();
@@ -17,14 +18,19 @@ const staticAssetsPath = path.resolve(__dirname, "public");
 app.use(html5History());
 app.use(compression());
 app.use(express.static(staticAssetsPath));
-
 // Init app
-socketService
-  .start(server)
-  .then(() => actionHandler.start())
-  .then(() => realtimeHandler.start())
-  .then(() => {
-    server.listen(process.env.PORT, "localhost", () =>
-      log.info("Server started on port", process.env.PORT)
-    );
-  });
+
+async function init() {
+  await initDB();
+  socketService
+    .start(server)
+    .then(() => actionHandler.start())
+    .then(() => realtimeHandler.start())
+    .then(() => {
+      server.listen(process.env.PORT, "localhost", () =>
+        log.info("Server started on port", process.env.PORT)
+      );
+    });
+}
+
+init();

@@ -42,7 +42,7 @@ const Player = ({
       <img
         className="player__avatar"
         src={avatarURL}
-        alt="{player.name}'s avatar"
+        alt={`${player.name}'s avatar`}
       />
 
       <div className="player__card-container">
